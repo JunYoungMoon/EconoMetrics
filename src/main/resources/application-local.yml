@@ -23,21 +23,21 @@ spring:
 
   sql:
     init:
-#      mode: always #초기 데이터 세팅, 초기데이터 반영 O
+      #      mode: always #초기 데이터 세팅, 초기데이터 반영 O
       mode: never #실제 개발과 운영서버에서 사용할것, 초기데이터 반영 X
 
   datasource:
     #로컬서버 DB 접속
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/
-#    username: root
-#    password: 1234
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    url: jdbc:mysql://localhost:3306/kampdb
+    #    username: root
+    #    password: 1234
 
     #개발서버 DB 정보
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.100.34:3306/
-    username:
-    password:
+    url: jdbc:mysql://localhost:3306/econo_metrics
+    username: econometrics
+    password: econometrics
 
   session:
     timeout: 3600
@@ -45,21 +45,6 @@ spring:
     jdbc:
       initialize-schema: never
       table-name: SPRING_SESSION
-
-  jpa:
-    open-in-view: false
-    generate-ddl: true
-    hibernate:
-#      ddl-auto: create # 운영 및 개발서버 절대 사용금지(초기세팅 DB생성시에만 사용)
-      ddl-auto: update # 개발 서버용(컬럼 추가만 가능)
-#      ddl-auto: validate # 개발 서버용
-#      ddl-auto: none # 운영 서버용
-      naming:
-        physical-strategy:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
 
   web:
     resources:
