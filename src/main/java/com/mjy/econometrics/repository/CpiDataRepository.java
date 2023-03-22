@@ -11,4 +11,6 @@ import java.util.List;
 public interface CpiDataRepository extends JpaRepository<CpiData, Long> {
     List<CpiData> findAllByOrderByDateAsc();
     List<CpiData> findByDateBetweenOrderByDateAsc(LocalDate startDate, LocalDate endDate);
+    List<CpiData> findByDateGreaterThanEqualOrderByDateAsc(LocalDate startDate);
+    List<CpiData> findByDateLessThanEqualOrderByDateAsc(LocalDate endDate);
 }

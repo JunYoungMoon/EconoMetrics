@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -21,10 +22,25 @@ public class CpiDataController {
     }
 
     @PostMapping
-    public List<CpiData> getCpiData(@RequestParam(value = "start_date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                    @RequestParam(value = "end_date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            return cpiDataRepository.findByDateBetweenOrderByDateAsc(startDate, endDate);
+    public List<CpiData> getCpiData(@RequestParam(value = "start_date", defaultValue = "", required = false) String startDate,
+                                    @RequestParam(value = "end_date", defaultValue = "", required = false) String endDate) {
+        LocalDate startLocalDate = null;
+        LocalDate endLocalDate = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        if (!startDate.isEmpty()) {
+            startLocalDate = LocalDate.parse(startDate, formatter);
+        }
+        if (!endDate.isEmpty()) {
+            endLocalDate = LocalDate.parse(endDate, formatter);
+        }
+
+        if (startLocalDate != null && endLocalDate != null) {
+            return cpiDataRepository.findByDateBetweenOrderByDateAsc(startLocalDate, endLocalDate);
+        } else if (startLocalDate != null) {
+            return cpiDataRepository.findByDateGreaterThanEqualOrderByDateAsc(startLocalDate);
+        } else if (endLocalDate != null) {
+            return cpiDataRepository.findByDateLessThanEqualOrderByDateAsc(endLocalDate);
         } else {
             return cpiDataRepository.findAllByOrderByDateAsc();
         }
