@@ -2,7 +2,6 @@ package com.mjy.econometrics.controller;
 
 import com.mjy.econometrics.model.CpiData;
 import com.mjy.econometrics.repository.CpiDataRepository;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
