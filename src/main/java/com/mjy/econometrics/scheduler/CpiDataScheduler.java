@@ -22,9 +22,10 @@ public class CpiDataScheduler {
         this.webClient = WebClient.builder().baseUrl("https://api.stlouisfed.org/fred/series/").build();
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
+    //@Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
+    @Scheduled(fixedDelay = 10000) // 10초 간격으로 실행
     public void saveCpiData() {
-        String fredKey = "your_fred_key_here";
+        String fredKey = "ab7b5316e9ca2864cd360ddad0ecebf4";
         String seriesId = "CPALTT01USM657N";
         LocalDate today = LocalDate.now();
 
@@ -33,6 +34,7 @@ public class CpiDataScheduler {
                         .queryParam("series_id", seriesId)
                         .queryParam("api_key", fredKey)
                         .build())
+                .header("Accept", "application/json")
                 .retrieve()
                 .bodyToMono(Map.class)
                 .subscribe(response -> {
@@ -43,8 +45,13 @@ public class CpiDataScheduler {
                             continue; // 2월 1일 이전 데이터는 저장하지 않음
                         }
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
-                        cpiDataRepository.save(new CpiData(date, value));
+
+                        // 이미 저장된 데이터인지 확인하여, 중복 저장하지 않음
+                        if (cpiDataRepository.findByDate(date).isEmpty()) {
+                            cpiDataRepository.save(new CpiData(date, value));
+                        }
                     }
                 });
+
     }
 }
