@@ -4,6 +4,9 @@ server:
     init-parameters:
       development: true
 
+fred:
+  api-key: 비밀~
+
 #  servlet:
 #    session:
 #      cookie:

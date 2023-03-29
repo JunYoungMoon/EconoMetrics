@@ -2,6 +2,7 @@ package com.mjy.econometrics.scheduler;
 
 import com.mjy.econometrics.model.CpiData;
 import com.mjy.econometrics.repository.CpiDataRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,19 +23,20 @@ public class CpiDataScheduler {
         this.webClient = WebClient.builder().baseUrl("https://api.stlouisfed.org/fred/series/").build();
     }
 
-    //@Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
-    @Scheduled(fixedDelay = 10000) // 10초 간격으로 실행
+    @Value("${fred.api-key}")
+    private String fredApiKey;
+
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
     public void saveCpiData() {
-        String fredKey = "ab7b5316e9ca2864cd360ddad0ecebf4";
-        String seriesId = "CPALTT01USM657N";
+        String seriesId = "CPIAUCSL";
         LocalDate today = LocalDate.now();
 
         webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("observations")
                         .queryParam("series_id", seriesId)
-                        .queryParam("api_key", fredKey)
+                        .queryParam("api_key", fredApiKey)
+                        .queryParam("file_type", "json")
                         .build())
-                .header("Accept", "application/json")
                 .retrieve()
                 .bodyToMono(Map.class)
                 .subscribe(response -> {
