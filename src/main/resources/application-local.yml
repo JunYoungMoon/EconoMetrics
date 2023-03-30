@@ -5,7 +5,7 @@ server:
       development: true
 
 fred:
-  api-key: 비밀~
+  api-key: ${FRED_API_KEY}
 
 #  servlet:
 #    session:
