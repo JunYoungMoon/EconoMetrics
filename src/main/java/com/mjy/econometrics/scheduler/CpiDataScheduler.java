@@ -42,10 +42,8 @@ public class CpiDataScheduler {
                 .subscribe(response -> {
                     List<Map<String, Object>> observations = (List<Map<String, Object>>) response.get("observations");
                     for (Map<String, Object> observation : observations) {
+
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
-                        if (date.isBefore(today.withDayOfMonth(1))) {
-                            continue; // 2월 1일 이전 데이터는 저장하지 않음
-                        }
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
                         // 이미 저장된 데이터인지 확인하여, 중복 저장하지 않음
@@ -54,6 +52,8 @@ public class CpiDataScheduler {
                         }
                     }
                 });
+        
+        //PCE 추가 필요
 
     }
 }
