@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "cpi_data")
-public class CpiData {
+@Table(name = "pce")
+public class PceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,15 +14,15 @@ public class CpiData {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "cpi_value")
-    private BigDecimal cpiValue;
+    @Column(name = "value")
+    private BigDecimal value;
 
-    public CpiData() {
+    public PceModel() {
     }
 
-    public CpiData(LocalDate date, BigDecimal cpiValue) {
+    public PceModel(LocalDate date, BigDecimal value) {
         this.date = date;
-        this.cpiValue = cpiValue;
+        this.value = value;
     }
 
     public Long getId() {
@@ -41,20 +41,20 @@ public class CpiData {
         this.date = date;
     }
 
-    public BigDecimal getCpiValue() {
-        return cpiValue;
+    public BigDecimal getValue() {
+        return value;
     }
 
-    public void setCpiValue(BigDecimal cpiValue) {
-        this.cpiValue = cpiValue;
+    public void setValue(BigDecimal value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return "CpiData{" +
+        return "pceData{" +
                 "id=" + id +
                 ", date=" + date +
-                ", cpiValue=" + cpiValue +
+                ", value=" + value +
                 '}';
     }
 }

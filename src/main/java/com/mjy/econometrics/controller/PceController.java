@@ -1,7 +1,7 @@
 package com.mjy.econometrics.controller;
 
-import com.mjy.econometrics.model.CpiData;
-import com.mjy.econometrics.repository.CpiDataRepository;
+import com.mjy.econometrics.model.PceModel;
+import com.mjy.econometrics.repository.PceRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,17 +12,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cpi")
-public class CpiDataController {
-    private final CpiDataRepository cpiDataRepository;
+@RequestMapping("/api/pce")
+public class PceController {
+    private final PceRepository pceDataRepository;
 
-    public CpiDataController(CpiDataRepository cpiDataRepository) {
-        this.cpiDataRepository = cpiDataRepository;
+    public PceController(PceRepository PceDataRepository) {
+        this.pceDataRepository = PceDataRepository;
     }
 
     @PostMapping
-    public List<CpiData> getCpiData(@RequestParam(value = "start_date", defaultValue = "", required = false) String startDate,
-                                    @RequestParam(value = "end_date", defaultValue = "", required = false) String endDate) {
+    public List<PceModel> getPceData(@RequestParam(value = "start_date", defaultValue = "", required = false) String startDate,
+                                     @RequestParam(value = "end_date", defaultValue = "", required = false) String endDate) {
         LocalDate startLocalDate = null;
         LocalDate endLocalDate = null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -35,13 +35,13 @@ public class CpiDataController {
         }
 
         if (startLocalDate != null && endLocalDate != null) {
-            return cpiDataRepository.findByDateBetweenOrderByDateAsc(startLocalDate, endLocalDate);
+            return pceDataRepository.findByDateBetweenOrderByDateAsc(startLocalDate, endLocalDate);
         } else if (startLocalDate != null) {
-            return cpiDataRepository.findByDateGreaterThanEqualOrderByDateAsc(startLocalDate);
+            return pceDataRepository.findByDateGreaterThanEqualOrderByDateAsc(startLocalDate);
         } else if (endLocalDate != null) {
-            return cpiDataRepository.findByDateLessThanEqualOrderByDateAsc(endLocalDate);
+            return pceDataRepository.findByDateLessThanEqualOrderByDateAsc(endLocalDate);
         } else {
-            return cpiDataRepository.findAllByOrderByDateAsc();
+            return pceDataRepository.findAllByOrderByDateAsc();
         }
     }
 }
