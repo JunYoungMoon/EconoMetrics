@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,16 +52,20 @@ public class CpiScheduler {
                             .map(observation -> new BigDecimal(observation.get("value").toString()))
                             .collect(Collectors.toList());
 
-                    List<BigDecimal> percentageList = new ArrayList<>();
-                    BigDecimal previousValue = null;
-                    for (BigDecimal value : valueList) {
-                        if (previousValue != null) {
-                            BigDecimal percentageChange = value.subtract(previousValue).divide(previousValue, 4, RoundingMode.HALF_UP);
-                            BigDecimal percentageValue = percentageChange.multiply(BigDecimal.valueOf(100));
-                            percentageList.add(percentageValue);
-                        }
-                        previousValue = value;
-                    }
+                    BigDecimal max = Collections.max(valueList);
+                    BigDecimal min = Collections.min(valueList);
+
+                    List<BigDecimal> percentageList = valueList.stream()
+                            .map(value -> {
+                                if (value.equals(max)) {
+                                    return BigDecimal.valueOf(100);
+                                } else if (value.equals(min)) {
+                                    return BigDecimal.ZERO;
+                                } else {
+                                    return value.subtract(min).divide(max.subtract(min), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+                                }
+                            })
+                            .collect(Collectors.toList());
 
                     for (Map<String, Object> observation : observations) {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
