@@ -16,14 +16,6 @@ fred:
 #        secure: true
 
 spring:
-  # Redis 연결 정보 설정
-  redis:
-    host: localhost
-    port: 6379
-    password: aaa
-    template:
-      default-key-prefix: chart-data
-      default-value-serializer: jdkSerializeable
   mvc:
     view:
       prefix: /WEB-INF/view/

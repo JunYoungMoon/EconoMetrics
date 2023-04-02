@@ -30,7 +30,6 @@ public class PceScheduler {
     @Scheduled(cron = "*/10 * * * * *") // 매 10초마다 실행
     public void savePceData() {
         String seriesId = "PCE";
-        LocalDate today = LocalDate.now();
 
         webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("observations")
