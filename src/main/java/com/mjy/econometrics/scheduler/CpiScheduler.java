@@ -33,6 +33,7 @@ public class CpiScheduler {
     private String fredApiKey;
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
+    @Scheduled(cron = "*/10 * * * * *") // 매 10초마다 실행
     public void saveCpiData() {
         String seriesId = "CPIAUCSL";
 
@@ -71,7 +72,7 @@ public class CpiScheduler {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
-                        if (cpiDataRepository.findByDate(date).isEmpty()) {
+//                        if (cpiDataRepository.findByDate(date).isEmpty()) {
                             // Redis에 데이터 저장
                             redisTemplate.opsForValue().set("cpi:" + date, value);
                             int index = valueList.indexOf(value);
@@ -80,7 +81,7 @@ public class CpiScheduler {
                             }
 
                             cpiDataRepository.save(new CpiModel(date, value));
-                        }
+//                        }
                     }
                 });
     }
