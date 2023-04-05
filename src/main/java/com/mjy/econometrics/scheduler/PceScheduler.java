@@ -27,7 +27,7 @@ public class PceScheduler {
     private String fredApiKey;
 
 //    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
-    @Scheduled(cron = "*/10 * * * * *") // 매 10초마다 실행
+@Scheduled(cron = "0 0 0 * * *") // 매 10초마다 실행
     public void savePceData() {
         String seriesId = "PCE";
 

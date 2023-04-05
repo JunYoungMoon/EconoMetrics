@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,8 +33,8 @@ public class CpiScheduler {
     @Value("${fred.api-key}")
     private String fredApiKey;
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
-    @Scheduled(cron = "*/10 * * * * *") // 매 10초마다 실행
+    //    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
+    @Scheduled(cron = "*/20 * * * * *") // 매 10초마다 실행
     public void saveCpiData() {
         String seriesId = "CPIAUCSL";
 
@@ -72,16 +73,17 @@ public class CpiScheduler {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
-//                        if (cpiDataRepository.findByDate(date).isEmpty()) {
-                            // Redis에 데이터 저장
-                            redisTemplate.opsForValue().set("cpi:" + date, value);
-                            int index = valueList.indexOf(value);
-                            if (index != -1) {
-                                redisTemplate.opsForValue().set("cpi_percentage:" + date, percentageList.get(index));
-                            }
+                        int index = valueList.indexOf(value);
 
-                            cpiDataRepository.save(new CpiModel(date, value));
-//                        }
+                        if (index != -1) {
+                            Map<String, Object> cpiData = new HashMap<>();
+                            cpiData.put("date", date);
+                            cpiData.put("value", value);
+                            cpiData.put("percentage", percentageList.get(index));
+                            redisTemplate.opsForList().rightPush("cpi", cpiData);
+                        }
+
+                        cpiDataRepository.save(new CpiModel(date, value));
                     }
                 });
     }

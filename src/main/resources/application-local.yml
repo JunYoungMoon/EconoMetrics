@@ -20,6 +20,16 @@ spring:
     host: localhost
     port: 6379
     timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 50
+        max-idle: 10
+        max-wait: -1ms
+        min-idle: 5
+    serializer: org.springframework.data.redis.serializer.GenericToStringSerializer
+    hash-key-serializer: org.springframework.data.redis.serializer.GenericToStringSerializer
+    value-serializer: org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+    hash-value-serializer: org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 
   mvc:
     view:
