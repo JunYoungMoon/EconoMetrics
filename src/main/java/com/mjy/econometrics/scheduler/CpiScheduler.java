@@ -1,5 +1,7 @@
 package com.mjy.econometrics.scheduler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mjy.econometrics.dto.CpiData;
 import com.mjy.econometrics.model.CpiModel;
 import com.mjy.econometrics.repository.CpiRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,10 +78,10 @@ public class CpiScheduler {
                         int index = valueList.indexOf(value);
 
                         if (index != -1) {
-                            Map<String, Object> cpiData = new HashMap<>();
-                            cpiData.put("date", date);
-                            cpiData.put("value", value);
-                            cpiData.put("percentage", percentageList.get(index));
+                            CpiData cpiData = new CpiData();
+                            cpiData.setDate(date);
+                            cpiData.setValue(value);
+                            cpiData.setPercentage(percentageList.get(index));
                             redisTemplate.opsForList().rightPush("cpi", cpiData);
                         }
 
