@@ -1,6 +1,5 @@
 package com.mjy.econometrics.scheduler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjy.econometrics.dto.CpiData;
 import com.mjy.econometrics.model.CpiModel;
 import com.mjy.econometrics.repository.CpiRepository;
@@ -14,7 +13,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

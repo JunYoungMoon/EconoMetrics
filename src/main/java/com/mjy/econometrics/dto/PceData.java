@@ -3,7 +3,7 @@ package com.mjy.econometrics.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class CpiData {
+public class PceData {
     private LocalDate date;
     private BigDecimal value;
     private BigDecimal percentage;
@@ -34,7 +34,7 @@ public class CpiData {
 
     @Override
     public String toString() {
-        return "CpiData{" +
+        return "PceData{" +
                 "date=" + date +
                 ", value=" + value +
                 ", percentage=" + percentage +
