@@ -79,7 +79,7 @@ public class PceScheduler {
                             PceData.setDate(date);
                             PceData.setValue(value);
                             PceData.setPercentage(percentageList.get(index));
-                            redisTemplate.opsForList().rightPush("Pce", PceData);
+                            redisTemplate.opsForList().rightPush("pce", PceData);
                         }
 
                         PceDataRepository.save(new PceModel(date, value));

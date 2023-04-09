@@ -1,14 +1,20 @@
 package com.mjy.econometrics.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjy.econometrics.model.CpiModel;
 import com.mjy.econometrics.model.PceModel;
 import com.mjy.econometrics.repository.CpiRepository;
 import com.mjy.econometrics.repository.PceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,17 +23,26 @@ import java.util.Map;
 @RequestMapping("/api/chart-data")
 public class ChartController {
 
-    private final CpiRepository cpiDataRepository;
-    private final PceRepository pceDataRepository;
-
-    public ChartController(CpiRepository cpiDataRepository, PceRepository pceDataRepository) {
-        this.cpiDataRepository = cpiDataRepository;
-        this.pceDataRepository = pceDataRepository;
-    }
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @GetMapping
     public ResponseEntity<Map<String, List<Double>>> getChartData() {
         Map<String, List<Double>> chartData = new HashMap<>();
+
+        List<Object> dataList = redisTemplate.opsForHash().values("cpi");
+        for (Object data : dataList) {
+            String value = (String) data;
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                Map<String, Object> dataMap = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
+                String date = (String) dataMap.get("date");
+                Double cpiValue = Double.parseDouble(dataMap.get("value").toString());
+                chartData.computeIfAbsent("cpi", k -> new ArrayList<>()).add(cpiValue);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         return ResponseEntity.ok(chartData);
     }
