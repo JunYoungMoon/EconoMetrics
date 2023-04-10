@@ -30,19 +30,19 @@ public class ChartController {
     public ResponseEntity<Map<String, List<Double>>> getChartData() {
         Map<String, List<Double>> chartData = new HashMap<>();
 
-        List<Object> dataList = redisTemplate.opsForHash().values("cpi");
-        for (Object data : dataList) {
-            String value = (String) data;
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                Map<String, Object> dataMap = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
-                String date = (String) dataMap.get("date");
-                Double cpiValue = Double.parseDouble(dataMap.get("value").toString());
-                chartData.computeIfAbsent("cpi", k -> new ArrayList<>()).add(cpiValue);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+
+        List<String> cpiData = redisTemplate.opsForList().range("cpi", 0, -1);
+
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            List<Map<String, Object>> dataList = objectMapper.readValue(data, new TypeReference<>() {});
+//            for (Map<String, Object> dataMap : dataList) {
+//                Double cpiValue = Double.parseDouble(dataMap.get("value").toString());
+//                chartData.computeIfAbsent("cpi", k -> new ArrayList<>()).add(cpiValue);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         return ResponseEntity.ok(chartData);
     }
