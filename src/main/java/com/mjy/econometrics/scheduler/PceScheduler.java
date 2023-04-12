@@ -1,6 +1,8 @@
 package com.mjy.econometrics.scheduler;
 
+import com.mjy.econometrics.dto.CpiData;
 import com.mjy.econometrics.dto.PceData;
+import com.mjy.econometrics.model.CpiModel;
 import com.mjy.econometrics.model.PceModel;
 import com.mjy.econometrics.repository.PceRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,12 +22,12 @@ import java.util.stream.Collectors;
 @Component
 public class PceScheduler {
 
-    private final PceRepository PceDataRepository;
+    private final PceRepository pceDataRepository;
     private final WebClient webClient;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public PceScheduler(PceRepository PceDataRepository, RedisTemplate<String, Object> redisTemplate) {
-        this.PceDataRepository = PceDataRepository;
+        this.pceDataRepository = PceDataRepository;
         this.redisTemplate = redisTemplate;
         this.webClient = WebClient.builder().baseUrl("https://api.stlouisfed.org/fred/series/").build();
     }
@@ -72,17 +74,19 @@ public class PceScheduler {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
-                        int index = valueList.indexOf(value);
+                        if (pceDataRepository.findByDate(date).isEmpty()) {
+                            int index = valueList.indexOf(value);
 
-                        if (index != -1) {
-                            PceData PceData = new PceData();
-                            PceData.setDate(date);
-                            PceData.setValue(value);
-                            PceData.setPercentage(percentageList.get(index));
-                            redisTemplate.opsForList().rightPush("pce", PceData);
+                            if (index != -1) {
+                                PceData PceData = new PceData();
+                                PceData.setDate(date);
+                                PceData.setValue(value);
+                                PceData.setPercentage(percentageList.get(index));
+                                redisTemplate.opsForList().rightPush("pce", PceData);
+                            }
+
+                            pceDataRepository.save(new PceModel(date, value));
                         }
-
-                        PceDataRepository.save(new PceModel(date, value));
                     }
                 });
     }

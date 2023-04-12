@@ -73,17 +73,19 @@ public class CpiScheduler {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
-                        int index = valueList.indexOf(value);
+                        if (cpiDataRepository.findByDate(date).isEmpty()) {
+                            int index = valueList.indexOf(value);
 
-                        if (index != -1) {
-                            CpiData cpiData = new CpiData();
-                            cpiData.setDate(date);
-                            cpiData.setValue(value);
-                            cpiData.setPercentage(percentageList.get(index));
-                            redisTemplate.opsForList().rightPush("cpi", cpiData);
+                            if (index != -1) {
+                                CpiData cpiData = new CpiData();
+                                cpiData.setDate(date);
+                                cpiData.setValue(value);
+                                cpiData.setPercentage(percentageList.get(index));
+                                redisTemplate.opsForList().rightPush("cpi", cpiData);
+                            }
+
+                            cpiDataRepository.save(new CpiModel(date, value));
                         }
-
-                        cpiDataRepository.save(new CpiModel(date, value));
                     }
                 });
     }
