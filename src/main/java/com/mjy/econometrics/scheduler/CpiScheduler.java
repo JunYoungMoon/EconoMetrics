@@ -73,7 +73,7 @@ public class CpiScheduler {
                         LocalDate date = LocalDate.parse(observation.get("date").toString());
                         BigDecimal value = new BigDecimal(observation.get("value").toString());
 
-                        if (cpiDataRepository.findByDate(date).isEmpty()) {
+                        if (cpiDataRepository.findFirstByDate(date).isEmpty()) {
                             int index = valueList.indexOf(value);
 
                             if (index != -1) {
@@ -87,6 +87,7 @@ public class CpiScheduler {
                             cpiDataRepository.save(new CpiModel(date, value));
                         }
                     }
+
                 });
     }
 }

@@ -14,6 +14,5 @@ public interface CpiRepository extends JpaRepository<CpiModel, Long> {
     List<CpiModel> findByDateBetweenOrderByDateAsc(LocalDate startDate, LocalDate endDate);
     List<CpiModel> findByDateGreaterThanEqualOrderByDateAsc(LocalDate startDate);
     List<CpiModel> findByDateLessThanEqualOrderByDateAsc(LocalDate endDate);
-    Optional<CpiModel> findByDate(LocalDate date);
-    Optional<CpiModel> findTopByOrderByDateDesc();
+    Optional<CpiModel> findFirstByDate(LocalDate date);
 }
