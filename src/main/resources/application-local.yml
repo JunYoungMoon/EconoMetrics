@@ -31,6 +31,14 @@ spring:
     value-serializer: org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
     hash-value-serializer: org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+
   mvc:
     view:
       prefix: /WEB-INF/view/
@@ -78,20 +86,5 @@ logging:
     org.hibernate.type: trace
 #    설정파일
 
-security:
-  oauth2:
-    client:
-      registration:
-        google:
-          client-id: [Google API Console에서 발급받은 Client ID]
-          client-secret: [Google API Console에서 발급받은 Client Secret]
-          scope:
-            - email
-            - profile
-      provider:
-        google:
-          authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-          token-uri: https://www.googleapis.com/oauth2/v4/token
-          user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-          user-name-attribute: sub
+
 
