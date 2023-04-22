@@ -1,8 +1,6 @@
 package com.mjy.econometrics.scheduler;
 
-import com.mjy.econometrics.dto.CpiData;
 import com.mjy.econometrics.dto.PceData;
-import com.mjy.econometrics.model.CpiModel;
 import com.mjy.econometrics.model.PceModel;
 import com.mjy.econometrics.repository.PceRepository;
 import org.springframework.beans.factory.annotation.Value;
