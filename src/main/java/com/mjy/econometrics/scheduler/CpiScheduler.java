@@ -33,7 +33,7 @@ public class CpiScheduler {
     @Value("${fred.api-key}")
     private String fredApiKey;
 
-    @Scheduled(cron = "*/20 * * * * *") // 매 10초마다 실행
+    @Scheduled(cron = "* * 1 * *") // 매 10초마다 실행
     public void saveCpiData() {
         String seriesId = "CPIAUCSL";
 
