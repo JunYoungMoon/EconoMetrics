@@ -11,10 +11,10 @@ public class ConfigDebugger implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigDebugger.class);
 
-    @Value("${security.oauth2.client.registration.google.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
 
-    @Value("${security.oauth2.client.registration.google.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
     @Override
