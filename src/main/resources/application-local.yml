@@ -68,12 +68,12 @@ spring:
     username: econometrics
     password: econometrics
 
-  session:
-    timeout: 3600
-    store-type: jdbc
-    jdbc:
-      initialize-schema: never
-      table-name: SPRING_SESSION
+#  session:
+#    timeout: 3600
+#    store-type: jdbc
+#    jdbc:
+#      initialize-schema: never
+#      table-name: SPRING_SESSION
 
   web:
     resources:
