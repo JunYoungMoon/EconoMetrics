@@ -28,7 +28,14 @@ public class SecurityConfig {
                 .userService(customOAuth2UserService)
                 .and()
                 .defaultSuccessUrl("/loginSuccess")
-                .failureUrl("/loginFailure");
+                .failureUrl("/loginFailure")
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/user")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID");
 
         return http.build();
     }
