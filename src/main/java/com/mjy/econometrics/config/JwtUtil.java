@@ -1,58 +1,42 @@
 package com.mjy.econometrics.config;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.Map;
 
+@Component
 public class JwtUtil {
+    @Value("${jwt.secret-key}")
+    private String jwtSecretKey;
 
-    private Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static String SECRET_KEY;
 
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+    @PostConstruct
+    public void init() {
+        SECRET_KEY = jwtSecretKey;
     }
+    private static final int EXPIRATION_TIME = 3600 * 1000; // 1 hour
 
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
+    public static String generateToken(Authentication authentication) {
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", oAuth2User.getAttribute("email"));
+        claims.put("authorities", oAuth2User.getAuthorities());
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
-    }
-
-    public String generateToken(String username) {
-        return doGenerateToken(username);
-    }
-
-    private String doGenerateToken(String subject) {
         return Jwts.builder()
-                .setSubject(subject)
+                .setClaims(claims)
+                .setSubject(oAuth2User.getName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 10))) // 10 hours
-                .signWith(secretKey)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
-    }
-
-    public Boolean validateToken(String token) {
-        return !isTokenExpired(token);
     }
 }

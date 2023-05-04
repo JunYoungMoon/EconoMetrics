@@ -7,8 +7,8 @@ server:
 fred:
   api-key: ${FRED_API_KEY}
 
-
-
+jwt:
+  secret-key: ${SECRET_KEY}
 #  servlet:
 #    session:
 #      cookie:
