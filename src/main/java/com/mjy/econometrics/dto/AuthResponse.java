@@ -2,11 +2,11 @@ package com.mjy.econometrics.dto;
 
 import java.util.Map;
 
-public class LoginResponse {
+public class AuthResponse {
     private Map<String, Object> userAttributes;
     private String jwtToken;
 
-    public LoginResponse(Map<String, Object> userAttributes, String jwtToken) {
+    public AuthResponse(Map<String, Object> userAttributes, String jwtToken) {
         this.userAttributes = userAttributes;
         this.jwtToken = jwtToken;
     }
