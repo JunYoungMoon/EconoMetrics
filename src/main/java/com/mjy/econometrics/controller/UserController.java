@@ -18,22 +18,8 @@ public class UserController {
         this.jwtUtil = jwtUtil;
     }
 
-//    @GetMapping("/getUser")
-//    public OAuth2User user(@AuthenticationPrincipal OAuth2User oauth2User) {
-//        return oauth2User;
-//    }
-
     @GetMapping("/getUser")
     public ResponseEntity<?> user(Authentication authentication) {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String jwtToken = jwtUtil.generateToken(authentication);
-
-        // 사용자 정보와 JWT 토큰을 함께 반환
-        return ResponseEntity.ok(new AuthResponse(oAuth2User.getAttributes(), jwtToken));
-    }
-
-    @GetMapping("/loginSuccess")
-    public ResponseEntity<?> loginSuccess(Authentication authentication) {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String jwtToken = jwtUtil.generateToken(authentication);
 
@@ -47,7 +33,7 @@ public class UserController {
     }
 
     // 로그아웃 엔드포인트 추가
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public String logout() {
         return "로그아웃";
     }

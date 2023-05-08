@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,28 +36,13 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService)
                 .and()
-                .defaultSuccessUrl("/loginSuccess")
                 .failureUrl("/loginFailure")
                 .and()
                 .logout()
-                .logoutUrl("/logout") // 사용자가 로그아웃을 요청하는 엔드포인트
-                .logoutSuccessUrl("/") // 로그아웃이 성공한 후 이동할 페이지
-                .invalidateHttpSession(true) // 로그아웃 시 세션 무효화
-                .clearAuthentication(true) // 인증 정보를 지움
-                .deleteCookies("JSESSIONID") // 쿠키 삭제
-                .addLogoutHandler(new LogoutHandler() {
-                    @Override
-                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-                        // OAuth2 로그아웃 처리 로직
-                        String logoutUrl = UriComponentsBuilder
-                                .fromHttpUrl("https://accounts.google.com/logout")
-                                .queryParam("redirect_uri", "http://localhost:8085") // 로그아웃 후 리다이렉션될 URL
-                                .build().encode().toUriString();
-
-                        response.setHeader("Location", logoutUrl);
-                        response.setStatus(HttpStatus.FOUND.value());
-                    }
-                });
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true) // 로그아웃 시 HttpSession 무효화
+                .clearAuthentication(true) // 인증 정보 클리어
+                .deleteCookies("JSESSIONID", "remember-me"); // 쿠키 제거
 
         return http.build();
     }
