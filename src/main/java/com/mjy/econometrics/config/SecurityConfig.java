@@ -1,29 +1,23 @@
 package com.mjy.econometrics.config;
 
 
-import com.mjy.econometrics.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,20 +27,44 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .failureUrl("/loginFailure")
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .invalidateHttpSession(true) // 로그아웃 시 HttpSession 무효화
-                .clearAuthentication(true) // 인증 정보 클리어
-                .deleteCookies("JSESSIONID", "remember-me"); // 쿠키 제거
+                .logoutSuccessHandler(oidcLogoutSuccessHandler())
+                .permitAll()
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
 
         return http.build();
     }
+
+    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+        OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =
+                new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository());
+
+        // 로그아웃 후 리다이렉트할 URL 설정
+        oidcLogoutSuccessHandler.setDefaultTargetUrl("http://localhost:8085/");
+
+        return oidcLogoutSuccessHandler;
+    }
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(this.googleClientRegistration());
+    }
+
+    @Autowired
+    private Environment env;
+
+    private ClientRegistration googleClientRegistration() {
+        return CommonOAuth2Provider.GOOGLE.getBuilder("google")
+                .clientId(env.getProperty("spring.security.oauth2.client.registration.google.client-id"))
+                .clientSecret(env.getProperty("spring.security.oauth2.client.registration.google.client-secret"))
+                .scope("openid", "email", "profile")
+                .build();
+    }
 }
+
 
 
 
